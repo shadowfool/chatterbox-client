@@ -6,18 +6,13 @@
 
   var app = {
     server:"https://api.parse.com/1/classes/messages",
-    init: function() {
+    init: function(name) {
       console.log('init called' + Array.prototype.slice.call(arguments));
-
+      console.log(name);
     },
     send: function(message) {
-      // $.post( "https://api.parse.com/1/classes/messages", function( data ) {
-      //   console.log("posted");
-      // });
-
-
       $.ajax({
-        type: "POST",
+        type:'POST',
         url: app.server,
         data: JSON.stringify(message),
         success: function() {
@@ -55,8 +50,14 @@
 
     },
     handleSubmit: function(val) {
-      console.log('v' + val);
-      return;
+      var username = window.location.search.slice(10);
+
+      app.send({
+        username: username,
+        text: val,
+        roomname: 'lobby'
+      });
+
     }
   };
 
@@ -64,18 +65,11 @@
 
 
   $( document ).ready(function() {
-    $( "#send" ).on("click", ".submit", function(event) {
+    $( "#send" ).on("submit", function(event) {
       app.handleSubmit($('#message').val());
       event.preventDefault();
 
     });
-    $( "#send").on("click", function(event) {
-      app.handleSubmit($('#message').val());
-      event.preventDefault();
-
-    });
-
-
 
     $( "#main").on("click", ".username", function() {
       console.log('bills right');
