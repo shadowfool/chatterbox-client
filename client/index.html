@@ -14,29 +14,20 @@
     <script src="scripts/app.js"></script>
   </head>
   <body>
-    <div id="main">
-      <h1>chatterbox</h1>
-      <!-- Your HTML goes here! -->
-
-
-
-
-
+  <div id="main">
+    <h1>chatterbox</h1>
+    <div class="spinner"><img src="client/images/spiffygif_46x46.gif"></div>
+    <div id="rooms">
+      Room:
+      <select id="roomSelect">
+      </select>
     </div>
-    <div id="chats">
-
-    </div>
-    <div id="talk">
-
-<input type="textarea" name="chat">
-    <input id="submitText" type="submit">Click Me!</</input>
-
-    </div>
-
-    <div id="roomSelect">
-    </div>
-
-
+    <form action="#" id="send" method="post">
+      <input type="text" name="message" id="message"/>
+      <input type="submit" name="submit" class="submit"/>
+    </form>
+    <div id="chats"></div>
+  </div>
 
   </body>
 </html>
