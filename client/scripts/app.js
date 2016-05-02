@@ -5,13 +5,7 @@
   $( document ).ready(function() {
     $( "#submitText" ).click(function() {
       alert( 'Handler for .click() called.' );
-
-
-
-
     });
-  
-
   });
 
 /*
@@ -20,7 +14,12 @@
 
         url: "https://api.parse.com/1/classes/messages",
 */
+///hacking ideas:
+// put stuff in the user name
+//request username hack
+
   var app = {
+    server:"https://api.parse.com/1/classes/messages",
     init: function() {
       return true;
     },
@@ -32,9 +31,13 @@
 
       $.ajax({
         type: "POST",
-        url: "https://api.parse.com/1/classes/messages",
+        url: app.server,
         data: JSON.stringify(message),
         success: function() {
+          console.log('success');
+        },
+        error: function(errMessage) {
+          console.log('error');
         },
         dataType: 'json'
       });
@@ -43,12 +46,23 @@
     fetch: function() {
       $.ajax({
         type: "GET",
-        success: function() {
+        url: app.server,
+        success: function(data) {
+          _.forEach(data.results, function(message) {
+            addMessage(message);
+          });
         }
       });
     },
     clearMessages() {
-      $('#chats').html('');
+      $('#chats').empty();
+    },
+    addMessage(message) {
+      $('<div class="message">' + _.escape(message.username) + ': ' + _.escape(message.text) + '</div>').appendTo('#chats');
+    },
+    addRoom(room) {
+      $('<div class="' + room + '">' + room + '</div>').appendTo('#roomSelect');
     }
-  
   };
+
+  app.fetch();
