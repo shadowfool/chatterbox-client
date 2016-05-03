@@ -10,6 +10,7 @@
     chatLog: {},
     username: window.location.search.slice(10),
     init: function(name) {
+      $('#name').text(app.username);
     },
     send: function(message) {
       // $('.spinner').css('visibility', 'visible');
@@ -73,11 +74,11 @@
     },
     addMessage: function(message) {
       var userName = app.sanitize(message.username);
-      var clazz = '';
+      var message = app.sanitize(message.text);
+      var newNode = $('<div class="chat" ><div class="spacer"><span class="username">' + userName + ':</span></div>' + message + '</div>').prependTo('#chats');
       if (app.friends.indexOf(userName) >= 0) {
-        clazz = ' friend';
+        //$(newNode).addClass('friend');
       }
-      $('<div class="chat" ><a href="" class="chat username">' + userName + '</a> ' + app.sanitize(message.text) + '</div>').prependTo('#chats');
     },
     addRoom: function(room) {
       $('<option value="' + room + '">' + room + '</option>').appendTo('#roomSelectData');
@@ -90,11 +91,10 @@
       } else {
         app.friends.splice(friendIndex, 1);
       }
-      var res = $('a');
+      var res = $('.username');
       for (var i = 0; i < res.length; i++) {
         var updateMe = res[i];
-        if($(updateMe).val() === val) {
-          console.log(updateMe);
+        if ($(updateMe).text() === val) {
           $(updateMe).toggleClass('friend');
         }
       }
@@ -126,6 +126,7 @@
   $( document ).ready(function() {
     setInterval(app.fetch, 1000);
     setInterval(app.fetchRoomList, 10000);
+    app.init();
     app.fetchRoomList();
     //Send Message
     $( '#send' ).on('submit', function(event) {
@@ -135,7 +136,7 @@
     });
 
     //Friend/Defriend
-    $( '#chats').on('click', '.username', function(event) {
+    $('#chats').on('click', '.username', function(event) {
       event.preventDefault();
       app.addRemoveFriend($(this).text());
     });
@@ -148,7 +149,11 @@
       }
       app.filterRooms(currentVal);
     });
-
+    //Room Select
+    $( '#name').on('click', function(event) {
+      var newSearch = 'username=' + (prompt('What is your name?') || 'anonymous');
+      window.location.search = newSearch;
+    });
   });
 
 

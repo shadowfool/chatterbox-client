@@ -9,10 +9,11 @@ body {
     width: 500px;
     margin: auto;
     text-align: left;
-    background: white;
-    padding: 50px 60px;
+    background: #80aaff;
+    padding: 20px 10px;
     border: solid #ddd;
     border-width: 0 1px 1px 1px;
+    border-radius: 5px;
 }
 
 #main h1 {
@@ -20,6 +21,7 @@ body {
     font-size: 35px;
     margin-bottom: 5px;
     padding: 5px;
+
 }
 
 #main h1 span {
@@ -49,7 +51,7 @@ body {
 form {
     padding: 20px;
     padding-left: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 form input[type=text] {
@@ -58,7 +60,10 @@ form input[type=text] {
     font-size: 12px;
     padding: 5px;
 }
-
+#name {
+    padding: 0 10px;
+    text-align: right;
+}
 .chat {
     padding: 5px;
     margin-bottom: 5px;
