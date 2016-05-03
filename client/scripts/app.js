@@ -4,6 +4,12 @@
 // put stuff in the user name
 //request username hack
 
+
+//TODO
+//bold friends
+//create rooms
+//change name
+
   var app = {
     server:"https://api.parse.com/1/classes/messages",
     init: function(name) {
@@ -30,7 +36,13 @@
         type: "GET",
         url: app.server,
         success: function(data) {
+          app.clearMessages();
           _.forEach(data.results, function(message) {
+            var room = _.escape(message.roomname).trim();
+            if (_.indexOf(app.rooms, room) === -1 && room !== ''){
+              app.rooms.push(room);
+              app.addRoom(room);
+            }
             app.addMessage(message);
           });
         }
@@ -39,25 +51,24 @@
     clearMessages: function() {
       $('#chats').empty();
     },
+    rooms: ['lobby'],
     addMessage: function(message) {
-      $('<div class="message" >' + _.escape(message.username) + ': ' + _.escape(message.text) + '</div>').appendTo('#chats');
-      $('<div class="username" >' + _.escape(message.username) + '</div>').appendTo('#main');
+      $('<div class="message" ><a href="" class="username">' + _.escape(message.username) + '</a> ' + _.escape(message.text) + '</div>').appendTo('#chats');
+      // $('<div class="username" >' + _.escape(message.username) + '</div>').appendTo('#main');
     },
     addRoom: function(room) {
-      $('<div class="' + room + '">' + room + '</div>').appendTo('#roomSelect');
+      $('<option value="' + room + '">' + room + '</option>').appendTo('#roomSelect');
     },
-    addFriend: function() {
-
+    addFriend: function(val) {
+      var friend = _.escape(val);
     },
     handleSubmit: function(val) {
       var username = window.location.search.slice(10);
-
       app.send({
         username: username,
         text: val,
         roomname: 'lobby'
       });
-
     }
   };
 
@@ -68,14 +79,15 @@
     $( "#send" ).on("submit", function(event) {
       app.handleSubmit($('#message').val());
       event.preventDefault();
+      $('#message').val('');
 
     });
 
-    $( "#main").on("click", ".username", function() {
-      console.log('bills right');
-      app.addFriend();
+    $( "#main").on("click", ".username", function(event) {
+      event.preventDefault();
+      app.addFriend($(this).text());
     });
   });
-
+  setInterval(app.fetch, 1000);
 
 
