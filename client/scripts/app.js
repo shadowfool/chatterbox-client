@@ -4,7 +4,7 @@
 
   var app = {
     server: 'https://api.parse.com/1/classes/messages',
-    currentRoom: ' ',
+    currentRoom: '',
     friends: [],
     rooms: [],
     chatLog: {},
@@ -30,7 +30,7 @@
       });
     },
     fetch: function() {
-      var query = {'where': {'roomname': app.currentRoom}};
+      var query = {'order': '-createdAt', 'where': {'roomname': app.currentRoom}};
       $.ajax({
         type: 'GET',
         url: app.server,
@@ -58,6 +58,7 @@
       $.ajax({
         type: 'GET',
         url: app.server,
+        data: {'numberOfEntries': '400'},
         success: function(data) {
           _.forEach(data.results, function(obj) {
             var room = app.sanitize(obj.roomname);
@@ -75,9 +76,18 @@
     addMessage: function(message) {
       var userName = app.sanitize(message.username);
       var message = app.sanitize(message.text);
-      var newNode = $('<div class="chat" ><div class="spacer"><span class="username">' + userName + ':</span></div>' + message + '</div>').prependTo('#chats');
+      if (userName.trim() === '' && message.trim() === '') {
+        return;
+      }
+      var newChat = $('<div class="chat" >' + message + '</div>');
+      var userSpan = $('<div class="spacer" ></div>');
+      var newUser = $('<span class="username">' + userName + '</span>');
+      userSpan.prepend(newUser);
+      newChat.prepend(userSpan);
+      newChat.prependTo('#chats');
+      
       if (app.friends.indexOf(userName) >= 0) {
-        //$(newNode).addClass('friend');
+        $(newUser).addClass('friend');
       }
     },
     addRoom: function(room) {
@@ -144,9 +154,6 @@
     //Room Select
     $( '#roomSelect').on('input', function(event) {
       var currentVal = $(this).val();
-      if ($(this).val() === '') {
-        currentVal = ' ';
-      }
       app.filterRooms(currentVal);
     });
     //Room Select
