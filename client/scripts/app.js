@@ -43,7 +43,6 @@
               app.chatLog[obj.objectId] = obj;
 
               var room = app.sanitize(obj.roomname);
-              //console.log(room);
               if (_.indexOf(app.rooms, room) === -1) {
                 app.rooms.push(room);
                 app.addRoom(room);
@@ -78,23 +77,27 @@
       if (app.friends.indexOf(userName) >= 0) {
         clazz = ' friend';
       }
-      $('<div class="chat" ><a href="" class="chat username' + clazz + '">' + userName + '</a> ' + app.sanitize(message.text) + '</div>').prependTo('#chats');
+      $('<div class="chat" ><a href="" class="chat username">' + userName + '</a> ' + app.sanitize(message.text) + '</div>').prependTo('#chats');
     },
     addRoom: function(room) {
       $('<option value="' + room + '">' + room + '</option>').appendTo('#roomSelectData');
     },
     addRemoveFriend: function(val) {
-      // var friend = app.sanitize(val);
-      // var friendIndex = _.indexOf(app.friends, friend);
-      // if (friendIndex === -1) {
-      //   app.friends.push(friend);
-      // } else {
-      //   app.friends.splice(friendIndex, 1);
-      // }
-
-      $('a .username bill').toggleClass('friend');
-
-
+      var friend = app.sanitize(val);
+      var friendIndex = _.indexOf(app.friends, friend);
+      if (friendIndex === -1) {
+        app.friends.push(friend);
+      } else {
+        app.friends.splice(friendIndex, 1);
+      }
+      var res = $('a');
+      for (var i = 0; i < res.length; i++) {
+        var updateMe = res[i];
+        if($(updateMe).val() === val) {
+          console.log(updateMe);
+          $(updateMe).toggleClass('friend');
+        }
+      }
     },
     handleSubmit: function(val) {
       app.send({
@@ -115,7 +118,7 @@
       });
     },
     sanitize: function(data) {
-      return _.escape(data).trim();
+      return _.escape(data);
     }
   };
 
@@ -134,7 +137,6 @@
     //Friend/Defriend
     $( '#chats').on('click', '.username', function(event) {
       event.preventDefault();
-      console.log($(this));
       app.addRemoveFriend($(this).text());
     });
 
