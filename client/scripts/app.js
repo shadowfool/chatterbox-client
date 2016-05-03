@@ -4,7 +4,7 @@
 
   var app = {
     server: 'https://api.parse.com/1/classes/messages',
-    currentRoom: '',
+    currentRoom: ' ',
     friends: [],
     rooms: [],
     chatLog: {},
@@ -29,23 +29,41 @@
       });
     },
     fetch: function() {
+      var query = {'where': {'roomname': app.currentRoom}};
       $.ajax({
         type: 'GET',
         url: app.server,
+        data: query,
         success: function(data) {
+          //console.log(data);
           //reversed to show up in reverse chron order
-          _.forEach(data.results.reverse(), function(obj) {
+          _.forEach(data.results, function(obj) {
             //console.log(obj, app.chatLog[obj.objectId]);
             if (app.chatLog[obj.objectId] === undefined) {
               app.chatLog[obj.objectId] = obj;
 
-              var room = app.sanitize(obj.roomname).trim();
+              var room = app.sanitize(obj.roomname);
               //console.log(room);
-              if (_.indexOf(app.rooms, room) === -1 && room !== '') {
+              if (_.indexOf(app.rooms, room) === -1) {
                 app.rooms.push(room);
                 app.addRoom(room);
               }
               app.addMessage(obj);
+            }
+          });
+        }
+      });
+    },
+    fetchRoomList: function() {
+      $.ajax({
+        type: 'GET',
+        url: app.server,
+        success: function(data) {
+          _.forEach(data.results, function(obj) {
+            var room = app.sanitize(obj.roomname);
+            if (_.indexOf(app.rooms, room) === -1 && room !== '') {
+              app.rooms.push(room);
+              app.addRoom(room);
             }
           });
         }
@@ -66,13 +84,17 @@
       $('<option value="' + room + '">' + room + '</option>').appendTo('#roomSelectData');
     },
     addRemoveFriend: function(val) {
-      var friend = app.sanitize(val);
-      var friendIndex = _.indexOf(app.friends, friend);
-      if (friendIndex === -1) {
-        app.friends.push(friend);
-      } else {
-        app.friends.splice(friendIndex, 1);
-      }
+      // var friend = app.sanitize(val);
+      // var friendIndex = _.indexOf(app.friends, friend);
+      // if (friendIndex === -1) {
+      //   app.friends.push(friend);
+      // } else {
+      //   app.friends.splice(friendIndex, 1);
+      // }
+
+      $('a .username bill').toggleClass('friend');
+
+
     },
     handleSubmit: function(val) {
       app.send({
@@ -87,19 +109,21 @@
       app.clearMessages();
       // display messages with the same room as current room
       _.forEach(app.chatLog, function(chat) {
-        if (chat.roomname === currentRoom) {
+        if (chat.roomname === app.currentRoom) {
           app.addMessage(chat);
         }
       });
     },
     sanitize: function(data) {
-      return _.escape(data);
+      return _.escape(data).trim();
     }
   };
 
 
   $( document ).ready(function() {
     setInterval(app.fetch, 1000);
+    setInterval(app.fetchRoomList, 10000);
+    app.fetchRoomList();
     //Send Message
     $( '#send' ).on('submit', function(event) {
       app.handleSubmit($('#message').val());
@@ -110,15 +134,21 @@
     //Friend/Defriend
     $( '#chats').on('click', '.username', function(event) {
       event.preventDefault();
+      console.log($(this));
       app.addRemoveFriend($(this).text());
     });
 
     //Room Select
     $( '#roomSelect').on('input', function(event) {
-      currentRoom = $(this).val();
-      app.filterRooms($(this).val());
+      var currentVal = $(this).val();
+      if ($(this).val() === '') {
+        currentVal = ' ';
+      }
+      app.filterRooms(currentVal);
     });
 
   });
 
+
+//
 
