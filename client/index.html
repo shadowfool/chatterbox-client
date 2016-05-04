@@ -16,6 +16,7 @@
   <body>
   <div id="main">
     <div id="name"></div>
+    <input type ="submit" value="copy everyone" id="copycopy">
     <h1>chatterbox</h1>
     <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
     <div id="rooms">
@@ -23,12 +24,13 @@
       <input id="roomSelect" list="roomSelectData" placeholder="Rooms or create">
       <datalist id="roomSelectData">
       </datalist>
+      <input type ="submit" value="tab" id="tabify">
     </div>
     <form action="#" id="send" method="post">
       <input type="text" name="message" id="message"/>
       <input type="submit" name="submit" class="submit"/>
     </form>
-    
+    <div id="tabs"></div>
   </div>
   <div id="chats"></div>
   </body>

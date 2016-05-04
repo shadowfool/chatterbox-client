@@ -65,6 +65,7 @@ form input[type=text] {
     text-align: right;
 }
 .chat {
+    border-radius: 2.5px;
     padding: 5px;
     margin-bottom: 5px;
     background-color: #eee;
@@ -92,5 +93,26 @@ form input[type=text] {
 .friend {
     color: #fff;
     background-color: #0090da;
+}
+#tabs{
+    width: 500px;
+    margin: auto;
+    text-align: left;
+    background: #80aaff;
+    padding: 20px 0px;
+    border-radius: 5px;
+}
+.tab{
+   display: inline-block;
+   border-radius: 2.5px;
+   margin: 2.5px;
+   margin-bottom: 5px;
+   background: lightgrey;
+   border: solid #ddd;
+   border-width: 1px 1px 1px 0;
+
+}
+.red {
+    background-color : red;
 }
 

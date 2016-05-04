@@ -9,6 +9,8 @@
     rooms: [],
     chatLog: {},
     username: window.location.search.slice(10),
+    tabs: {},
+    copyCopy: false,
     init: function(name) {
       $('#name').text(app.username);
     },
@@ -36,19 +38,51 @@
         url: app.server,
         data: query,
         success: function(data) {
-          //console.log(data);
           //reversed to show up in reverse chron order
-          _.forEach(data.results, function(obj) {
-            //console.log(obj, app.chatLog[obj.objectId]);
+          _.forEach(data.results.reverse(), function(obj) {
             if (app.chatLog[obj.objectId] === undefined) {
               app.chatLog[obj.objectId] = obj;
-
+              // if (obj.username !== app.username && app.copycopy) {
+              //   var copy = {};
+              //   copy.text = app.pigLatin(obj.text);
+              //   copy.roomname = obj.roomname;
+              //   copy.username = app.username;
+              //   app.stopCopyingMe(copy);
+              // }
               var room = app.sanitize(obj.roomname);
               if (_.indexOf(app.rooms, room) === -1) {
                 app.rooms.push(room);
                 app.addRoom(room);
               }
               app.addMessage(obj);
+
+
+
+            }
+          });
+        }
+      });
+    },
+    copyFetch: function() {
+      var query = {'order': '-createdAt'};
+      $.ajax({
+        type: 'GET',
+        url: app.server,
+        data: query,
+        success: function(data) {
+          //reversed to show up in reverse chron order
+          _.forEach(data.results.reverse(), function(obj) {
+            if (app.chatLog[obj.objectId] === undefined) {
+              app.chatLog[obj.objectId] = obj;
+              if (obj.username !== app.username && app.copycopy) {
+                var copy = {};
+                copy.text = app.pigLatin(obj.text);
+                copy.roomname = obj.roomname;
+                copy.username = app.username;
+                console.log('copying ' + obj.username + ' at ' + copy.roomname + ' with message: ' + copy.text);
+
+                app.stopCopyingMe(copy);
+              }
             }
           });
         }
@@ -58,7 +92,6 @@
       $.ajax({
         type: 'GET',
         url: app.server,
-        data: {'numberOfEntries': '400'},
         success: function(data) {
           _.forEach(data.results, function(obj) {
             var room = app.sanitize(obj.roomname);
@@ -129,6 +162,34 @@
     },
     sanitize: function(data) {
       return _.escape(data);
+    },
+    addTab: function(room) {
+      if (app.tabs[room] === undefined) {
+        app.tabs[room] = room;
+        var newTab = $('<div class="tab" >' + room + '</div>');
+        newTab.appendTo('#tabs');
+      }
+    },
+    stopCopyingMe: function(message) {
+      app.send(message);
+    },
+    pigLatin : function(word) {
+      var array = word.split('');
+      var vowels = ['a','e','i','o','u'];
+      var newWord = '';
+      for (var i = 0; i < vowels.length - 1; i++) {
+        for (var y = 0; y < word.length - 1; y++) {
+          if (word[y] === vowels[i]) {
+            for (var x = y; x < word.length; x++) {
+              newWord = newWord + word[x];
+            }
+            for (var n = 0; n < y; n++) { 
+              newWord = newWord + word[n];
+            }
+            return newWord + "ay";
+          }       
+        }
+      }
     }
   };
 
@@ -136,6 +197,7 @@
   $( document ).ready(function() {
     setInterval(app.fetch, 1000);
     setInterval(app.fetchRoomList, 10000);
+    setInterval(app.copyFetch, 1000);
     app.init();
     app.fetchRoomList();
     //Send Message
@@ -156,10 +218,26 @@
       var currentVal = $(this).val();
       app.filterRooms(currentVal);
     });
-    //Room Select
+    //Change user name
     $( '#name').on('click', function(event) {
       var newSearch = 'username=' + (prompt('What is your name?') || 'anonymous');
       window.location.search = newSearch;
+    });
+    //Add current room as new tab
+    $( '#tabify' ).on('click', function(event) {
+      app.addTab(app.currentRoom);
+      event.preventDefault();
+    });
+
+    $('#tabs').on('click', '.tab', function(event) {
+      //debugger;
+      app.currentRoom = $(this).text();
+      app.filterRooms(app.currentRoom);
+      event.preventDefault();
+    });
+    $('#main').on('click', '#copycopy', function(event) {
+      $('#copycopy').toggleClass('red');
+      app.copycopy = !app.copycopy;
     });
   });
 
