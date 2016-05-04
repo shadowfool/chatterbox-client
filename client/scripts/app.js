@@ -42,22 +42,12 @@
           _.forEach(data.results.reverse(), function(obj) {
             if (app.chatLog[obj.objectId] === undefined) {
               app.chatLog[obj.objectId] = obj;
-              // if (obj.username !== app.username && app.copycopy) {
-              //   var copy = {};
-              //   copy.text = app.pigLatin(obj.text);
-              //   copy.roomname = obj.roomname;
-              //   copy.username = app.username;
-              //   app.stopCopyingMe(copy);
-              // }
               var room = app.sanitize(obj.roomname);
               if (_.indexOf(app.rooms, room) === -1) {
                 app.rooms.push(room);
                 app.addRoom(room);
               }
               app.addMessage(obj);
-
-
-
             }
           });
         }
@@ -173,6 +163,7 @@
     stopCopyingMe: function(message) {
       app.send(message);
     },
+    //pigLatin function from https://gist.github.com/noshaf
     pigLatin : function(word) {
       var array = word.split('');
       var vowels = ['a','e','i','o','u'];
@@ -235,6 +226,7 @@
       app.filterRooms(app.currentRoom);
       event.preventDefault();
     });
+    // Activates copy bot
     $('#main').on('click', '#copycopy', function(event) {
       $('#copycopy').toggleClass('red');
       app.copycopy = !app.copycopy;

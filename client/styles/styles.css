@@ -110,6 +110,7 @@ form input[type=text] {
    background: lightgrey;
    border: solid #ddd;
    border-width: 1px 1px 1px 0;
+   padding: 2px, 2px, 2px, 2px;
 
 }
 .red {
